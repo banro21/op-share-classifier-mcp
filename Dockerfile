@@ -12,6 +12,5 @@ COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY src/ src/
 USER appuser
-EXPOSE 8000
-ENV PORT=8000
+EXPOSE 8080
 CMD ["python", "-m", "op_share_classifier"]

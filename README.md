@@ -22,25 +22,26 @@ ruff format src tests
 ## Running the Server
 
 ```bash
-export MCP_AUTH_TOKEN=your-secret-token
 python -m op_share_classifier
 ```
 
-The server listens on `$PORT` (default 8000). Health check: `GET /healthz`.
+The server listens on `$PORT` (default 8080). Health check: `GET /healthz`. MCP endpoint: `POST /mcp`.
 
 ## Deploy (Natoma)
 
 ```bash
 docker build -t op-share-classifier-mcp .
-docker run -e MCP_AUTH_TOKEN=your-secret-token -p 8000:8000 op-share-classifier-mcp
+docker run -p 8080:8080 op-share-classifier-mcp
 ```
+
+> **Auth:** Natoma authenticates callers at its gateway; the MCP server does not enforce its own auth for repo-based custom apps. Do not set `MCP_AUTH_TOKEN`.
 
 ## SECURITY
 
 > **WARNING**: The URL fragment contains a cryptographic secret. Handle with care.
 
-- `MCP_AUTH_TOKEN` must be set to a strong random secret; all MCP endpoints require `Authorization: Bearer <token>`.
 - The server **never logs** the URL, fragment, UUID, or token — only a 12-hex-char SHA-256 prefix of the URL.
 - A `public` classification **consumes one view** on the target share link. Always dedup before calling.
 - Run as non-root (uid 10001) in Docker.
 - Secrets must never be committed to source control.
+- When deployed behind Natoma, caller authentication is enforced at the Natoma gateway; the server is only reachable via Natoma's internal network.

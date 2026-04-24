@@ -5,19 +5,6 @@ import respx
 from op_share_classifier.classify import classify
 
 
-@pytest.fixture(autouse=True)
-def set_auth_token(monkeypatch):
-    monkeypatch.setenv("MCP_AUTH_TOKEN", "test-token")
-
-
-def test_create_app_raises_without_token(monkeypatch):
-    monkeypatch.delenv("MCP_AUTH_TOKEN", raising=False)
-    from op_share_classifier.server import create_app
-
-    with pytest.raises(RuntimeError, match="MCP_AUTH_TOKEN"):
-        create_app()
-
-
 @respx.mock
 @pytest.mark.asyncio
 async def test_classify_tool_email_restricted():
@@ -44,3 +31,12 @@ async def test_classify_tool_public():
     )
     assert result["access"] == "public"
     assert result["template"] == "003"
+
+
+def test_create_app_returns_asgi_app():
+    from op_share_classifier.server import create_app
+
+    app = create_app()
+    assert app is not None
+    # FastMCP's streamable_http_app returns a Starlette instance
+    assert hasattr(app, "router")
