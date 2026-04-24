@@ -40,3 +40,14 @@ def test_create_app_returns_asgi_app():
     assert app is not None
     # FastMCP's streamable_http_app returns a Starlette instance
     assert hasattr(app, "router")
+
+
+def test_dns_rebinding_protection_disabled():
+    """Verify DNS-rebinding protection is off.
+
+    Required for deployment behind a trusted proxy like Natoma.
+    """
+    from op_share_classifier.server import mcp
+
+    assert mcp.settings.transport_security is not None
+    assert mcp.settings.transport_security.enable_dns_rebinding_protection is False

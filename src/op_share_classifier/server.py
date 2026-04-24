@@ -2,6 +2,7 @@ import json
 import logging
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
@@ -13,6 +14,9 @@ mcp = FastMCP(
     name="op-share-classifier",
     streamable_http_path="/mcp",
     stateless_http=True,
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=False,
+    ),
 )
 
 
